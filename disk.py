@@ -3,3 +3,4 @@ class Disk:
         self.name = name
         self.genre = genre
         self.price = price
+        properties = {'name': self.name}
