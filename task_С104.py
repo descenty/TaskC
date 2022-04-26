@@ -40,32 +40,41 @@ def manage_stores():
         for i in range(len(stores)):
             print(str(i + 1) + '.', stores[i].get_main_info())
         print('команды: 1 - управлять магазином, 2 - создать магазин, 3 - удалить магазин, 0 - выйти')
-        ans = input().strip()
-        match ans:
-            case '1':
-                print('Введите индекс магазина:')
-                ans = int(input()) - 1
-                if ans in range(len(stores)):
-                    manage_store(stores[ans])
-            case '2':
-                print('Введите название магазина:')
-                name = input().strip()
-                store = Store(name)
-                stores.append(store)
-            case '3':
-                print('Введите индекс магазина:')
-                ans = int(input()) - 1
-                if ans in range(len(stores)):
-                    del stores[ans]
+        try:
+            ans = input().strip()
+            match ans:
+                case '1':
+                    print('Введите индекс магазина: ', end='')
+                    ans = int(input()) - 1
+                    if ans in range(len(stores)):
+                        manage_store(stores[ans])
+                    else:
+                        print('Магазин с индексом {} не найден'.format(ans))
+                case '2':
+                    print('Введите название магазина: ', end='')
+                    name = input().strip()
+                    store = Store(name)
+                    stores.append(store)
+                case '3':
+                    print('Введите индекс магазина: ', end='')
+                    ans = int(input()) - 1
+                    if ans in range(len(stores)):
+                        del stores[ans]
+                    else:
+                        print('МАГАЗИН НЕ НАЙДЕН')
+        except ValueError:
+            print('НЕВЕРНЫЙ ТИП ДАННЫХ')
         print()
 
 
 def manage_store(store: Store):
     ans = ''
     while ans != '0':
+        print('-' * 20)
         print(store)
+        print('-' * 20)
         print('команды: 1 - добавить диск, 2 - изменить диск, 3 - удалить диск, 4 - изменить адрес магазина, '
-              '5 - изменить имя магазина, 0 - выйти')
+              '5 - изменить имя магазина, 6 - записать в файл, 0 - выйти')
         ans = input().strip()
         match ans:
             case '1':
@@ -90,5 +99,11 @@ def manage_store(store: Store):
                 store.change_property('адрес')
             case '5':
                 store.change_property('имя')
+            case '6':
+                print('Введите имя файла (.txt)')
+                path = input().strip()
+                store.write_txt(path)
+                print('Информация записана')
+
 
 manage_stores()

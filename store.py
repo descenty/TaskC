@@ -46,8 +46,11 @@ class Store:
             audio: Audio
             for audio in self.audios:
                 value += '      ' + audio.__str__() + '\n'
+                value += '         Список песен:\n'
                 if audio.tracks is not None:
-                    value += '          ' + audio.str_tracks()
+                    track: list(str)
+                    for track in audio.str_tracks():
+                        value += '              {}\n'.format(track)
         else:
             value += '      аудиодисков нету\n'
         value += '  Список фильмов:\n'
@@ -55,8 +58,10 @@ class Store:
             dvd: DVD
             for dvd in self.dvds:
                 value += '      ' + dvd.__str__() + '\n'
+                value += '         Список главных ролей:\n'
                 if dvd.main_roles_actors is not None:
-                    value += '          ' + dvd.str_main_roles_actors()
+                    for main_role_actor in dvd.str_main_roles_actors():
+                        value += '              {0}\n'.format(main_role_actor)
         else:
             value += '      фильмов нету'
         return value
@@ -87,9 +92,12 @@ class Store:
         return None
 
     def change_disks(self):
-        print('Введите индекс диска:')
-        index = int(input())
-        self.set_disk_by_index(index)
+        print('Введите индекс диска: ', end='')
+        try:
+            index = int(input())
+            self.set_disk_by_index(index)
+        except ValueError:
+            print('НЕВЕРНЫЙ ТИП ДАННЫХ')
 
     @staticmethod
     def set_disk(disk: Disk):
@@ -106,6 +114,7 @@ class Store:
     def set_disk_by_index(self, index: int):
         disk = self.get_disk_by_index(index)
         if disk is None:
+            print('ДИСК НЕ НАЙДЕН')
             return
         self.set_disk(disk)
 
@@ -118,6 +127,8 @@ class Store:
                 self.audios.remove(disk)
             elif type(disk) is DVD:
                 self.audios.remove(disk)
+        else:
+            print('ДИСК НЕ НАЙДЕН')
 
     def __add__(self, other):
         if type(other) is Audio:
@@ -137,6 +148,7 @@ class Store:
             self.audios.remove(other)
         return self
 
-    def generate_txt(self, path):
-        for item in self.properties:
-            print(item)
+    def write_txt(self, path: str):
+        f = open(path + '.txt', 'w')
+        f.write(self.__str__())
+        f.close()

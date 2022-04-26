@@ -1,10 +1,19 @@
 class Disk:
     def __init_properties__(self):
         self.properties = {
-            'Имя': (self.name, 'self.name = input().strip()'),
-            'Жанр': (self.genre, 'self.genre = input().strip()'),
-            'Цена': (self.price, 'self.price = int(input())'),
+            'Имя': (self.get_name, 'self.name = input().strip()'),
+            'Жанр': (self.get_genre, 'self.genre = input().strip()'),
+            'Цена': (self.get_price, 'self.price = int(input())'),
         }
+
+    def get_name(self):
+        return self.name
+
+    def get_genre(self):
+        return self.genre
+
+    def get_price(self):
+        return self.price
 
     def __init__(self, name: str, genre: str = '', price: int = 0):
         self.name = name
@@ -26,11 +35,11 @@ class Disk:
                     else:
                         value[1]()
                 except ValueError:
-                    print('Неправильный тип данных')
+                    print('НЕВЕРНЫЙ ТИП ДАННЫХ')
                     flag = True
         else:
             print('Поле не найдено')
 
     def __str__(self):
-        props = {x[0]: x[1][0] for x in self.properties.items() if x[0] != 'Имя' and type(x[1][0]) is str}
+        props = {x[0]: x[1][0]() for x in self.properties.items() if x[0] != 'Имя' and type(x[1][0]()) in [str, int]}
         return '{} {}'.format(self.name, props)
