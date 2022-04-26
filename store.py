@@ -1,69 +1,142 @@
 from dvd import *
 from audio import *
 
+
 class Store:
     name: str
     address: str
-    audios: list
-    dvds: list
+    audios: list[Audio]
+    dvds: list[DVD]
+    properties: dict
 
-    def __init__(self, name: str, address: str, audios: list, dvds: list):
-        self.set_name()
-        self.set_address()
-        self.set_audios()
-        self.dvds = dvds
+    def __init_properties__(self):
+        self.properties = {
+            'Имя': (self.name, 'self.name = input().strip()'),
+            'Адрес': (self.address, 'self.address = input().strip()'),
+            'Аудиодиски': (self.audios, self.change_disks),
+            'Фильмы': (self.dvds, self.change_disks)
+        }
 
-    def set_name(self, name: str):
+    def __init__(self, name: str, address: str = '', audios: list = None, dvds: list = None):
         self.name = name
-
-    def set_address(self, address: str):
         self.address = address
-
-    def set_audios(self, audios: list):
         self.audios = audios
-
-    def set_dvds(self, dvds: list):
         self.dvds = dvds
+        self.__init_properties__()
+
+    def change_property(self, property_name: str):
+        property_name = property_name.capitalize()
+        print(property_name + ': ', end='')
+        value = self.properties[property_name]
+        if value is not None:
+            if type(value[1]) is str:
+                exec(value[1])
+            else:
+                value[1]()
+        else:
+            print('Поле не найдено')
+
+    def get_main_info(self):
+        return '{} ({})'.format(self.name, self.address)
 
     def __str__(self):
-        value = '{}, {}'.format(self.name, self.address)
-        value += 'Список аудиодисков: \n'
-        item: Audio
-        for item in self.audios:
-            value += item.__str__() + '\n'
-        item: DVD
-        for item in self.dvds:
-            value += item.__str__() + '\n'
+        value = '{} ({})\n'.format(self.name, self.address if self.address is not None else '')
+        value += '  Список аудиодисков:\n'
+        if self.audios is not None:
+            audio: Audio
+            for audio in self.audios:
+                value += '      ' + audio.__str__() + '\n'
+                if audio.tracks is not None:
+                    value += '          ' + audio.str_tracks()
+        else:
+            value += '      аудиодисков нету\n'
+        value += '  Список фильмов:\n'
+        if self.dvds is not None:
+            dvd: DVD
+            for dvd in self.dvds:
+                value += '      ' + dvd.__str__() + '\n'
+                if dvd.main_roles_actors is not None:
+                    value += '          ' + dvd.str_main_roles_actors()
+        else:
+            value += '      фильмов нету'
         return value
 
     def __len__(self):
-        return len(self.audios + self.dvds)
+        value = 0
+        if self.audios is not None:
+            value += len(self.audios)
+        if self.dvds is not None:
+            value += len(self.dvds)
+        return value
 
     def get_disk_by_index(self, index: int):
+        index -= 1
         curr = 0
-        for item in self.audios:
-            if curr == index:
-                return item
-            else:
-                curr += 1
-        for item in self.dvds:
-            if curr == index:
-                return item
-            else:
-                curr += 1
+        if self.audios is not None:
+            for item in self.audios:
+                if curr == index:
+                    return item
+                else:
+                    curr += 1
+        if self.dvds is not None:
+            for item in self.dvds:
+                if curr == index:
+                    return item
+                else:
+                    curr += 1
         return None
 
+    def change_disks(self):
+        print('Введите индекс диска:')
+        index = int(input())
+        self.set_disk_by_index(index)
+
+    @staticmethod
+    def set_disk(disk: Disk):
+        ans = ''
+        while ans != '0':
+            print('Какое свойство вы хотите изменить? ', '(' + ' '.join(list(disk.properties.keys())) + ')')
+            print('0 - выход')
+            ans = input().strip().capitalize()
+            if ans in disk.properties.keys():
+                disk.change_property(ans)
+            else:
+                print('Свойство ({}) не найдено'.format(ans))
+
     def set_disk_by_index(self, index: int):
-        item = self.get_disk_by_index(index)
-        if type(item) is Audio:
-            print("Какое поле вы хотите изменить (название, жанр, цена?")
-            print
-            a = input()
-     #       while input() != 'q'
+        disk = self.get_disk_by_index(index)
+        if disk is None:
+            return
+        self.set_disk(disk)
 
-    # Реализовать в виде делегатов
-    # https://qna.habr.com/q/237887
-    properties = {'имя': set_name, 'адрес': set_address}
-    #
+    def delete_disk(self):
+        print('Введите индекс диска для удаления:')
+        ans = int(input()) - 1
+        if ans in range(len(self)):
+            disk = self.get_disk_by_index(ans)
+            if type(disk) is Audio:
+                self.audios.remove(disk)
+            elif type(disk) is DVD:
+                self.audios.remove(disk)
 
+    def __add__(self, other):
+        if type(other) is Audio:
+            if self.audios is None:
+                self.audios = []
+            self.audios.append(other)
+        elif type(other) is DVD:
+            if self.dvds is None:
+                self.dvds = []
+            self.dvds.append(other)
+        return self
 
+    def __sub__(self, other):
+        if type(other) is Audio:
+            self.audios.remove(other)
+        elif type(other) is DVD:
+            self.audios.remove(other)
+        return self
+
+    def generate_txt(self, path):
+        for item in self.properties:
+            print(item)
