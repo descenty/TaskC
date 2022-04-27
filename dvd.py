@@ -3,16 +3,16 @@ from disk import *
 
 class DVD(Disk):
     def __init__(self, name: str, genre: str = '', price: int = 0, director: str = '', company: str = '',
-                 main_roles_actors: dict = None):
+                 main_roles_actors={}):
         Disk.__init__(self, name, genre, price)
         self.director = director
-        self.properties['Режиссер'] = (self.get_director, 'self.set_director(input().strip())')
+        self.properties['Режиссер'] = ('director', self.get_director)
 
         self.company = company
-        self.properties['Кинокомпания'] = (self.get_company, 'self.company = input().strip()')
+        self.properties['Кинокомпания'] = ('company', self.get_company)
 
         self.main_roles_actors = main_roles_actors
-        self.properties['Главные роли'] = (self.get_main_roles_actors, self.change_main_roles)
+        self.properties['Главные роли'] = ('main_roles_actors', self.get_main_roles_actors)
 
     def change_main_roles(self):
         ans = ''

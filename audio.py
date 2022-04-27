@@ -2,19 +2,18 @@ from disk import *
 
 
 class Audio(Disk):
-    def __init__(self, name: str, genre: str = '', price: int = 0, performer: str = 'no_name', studio: str = '',
-                 tracks: dict = None):
+    def __init__(self, name='', genre='', price=0, performer='', studio='',
+                 tracks={}):
         Disk.__init__(self, name, genre, price)
 
         self.performer = performer
-        self.properties['Исполнитель'] = (self.get_performer, 'self.performer = input().strip()')
+        self.properties['Исполнитель'] = ('performer', self.get_performer)
 
         self.studio = studio
-        self.properties['Студия звукозаписи'] = (self.get_studio, 'self.studio = input().strip()')
+        self.properties['Студия звукозаписи'] = ('studio', self.get_studio)
 
         self.tracks = tracks
-        self.properties['Список песен'] = (self.get_tracks, self.change_tracks)
-
+        self.properties['Список песен'] = ('tracks', self.get_tracks)
 
     def get_performer(self):
         return self.performer
@@ -24,7 +23,6 @@ class Audio(Disk):
 
     def get_tracks(self):
         return self.tracks
-
 
     def change_tracks(self):
         ans = ''

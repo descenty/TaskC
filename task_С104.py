@@ -30,7 +30,6 @@ from store import *
 
 stores = []
 
-
 def manage_stores():
     ans = ''
     while ans != '0':

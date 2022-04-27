@@ -1,46 +1,46 @@
 from dvd import *
 from audio import *
+import class_properties
 
 
 class Store:
-    name: str
-    address: str
-    audios: list[Audio]
-    dvds: list[DVD]
-    properties: dict
-
-    def __init_properties__(self):
-        self.properties = {
-            'Имя': (self.name, 'self.name = input().strip()'),
-            'Адрес': (self.address, 'self.address = input().strip()'),
-            'Аудиодиски': (self.audios, self.change_disks),
-            'Фильмы': (self.dvds, self.change_disks)
-        }
-
-    def __init__(self, name: str, address: str = '', audios: list = None, dvds: list = None):
-        self.name = name
-        self.address = address
-        self.audios = audios
-        self.dvds = dvds
-        self.__init_properties__()
-
     def change_property(self, property_name: str):
-        property_name = property_name.capitalize()
-        print(property_name + ': ', end='')
-        value = self.properties[property_name]
-        if value is not None:
-            if type(value[1]) is str:
-                exec(value[1])
-            else:
-                value[1]()
-        else:
-            print('Поле не найдено')
+        class_properties.change_property(self, property_name)
+
+    def __init__(self, name: str, address: str = '', audios: list = None, dvds: list = None, disks: list = None):
+        self.properties = {}
+
+        self.name = name
+        self.properties['Имя'] = ('name', self.get_name)
+
+        self.address = address
+        self.properties['Адрес'] = ('address', self.get_address)
+
+        self.audios = audios
+        self.properties['Аудиодиски'] = ('audios', self.get_audios)
+
+        self.dvds = dvds
+        self.properties['Фильмы'] = ('dvds', self.get_dvds)
+
+        self.disks = disks
+
+    def get_name(self):
+        return self.name
+
+    def get_address(self):
+        return self.address
+
+    def get_audios(self):
+        return self.audios
+
+    def get_dvds(self):
+        return self.dvds
 
     def get_main_info(self):
         return '{} ({})'.format(self.name, self.address)
 
     def __str__(self):
-        value = '{} ({})\n'.format(self.name, self.address if self.address is not None else '')
+        value = '{} ({})\n'.format(self.name, self.address)
         value += '  Список аудиодисков:\n'
         if self.audios is not None:
             audio: Audio
