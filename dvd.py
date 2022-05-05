@@ -14,28 +14,6 @@ class DVD(Disk):
         self.main_roles_actors = main_roles_actors
         self.properties['Главные роли'] = ('main_roles_actors', self.get_main_roles_actors)
 
-    def change_main_roles(self):
-        ans = ''
-        while ans != '0':
-            if self.main_roles_actors is not None:
-                for main_role_actor in self.str_main_roles_actors():
-                    print('              {}'.format(main_role_actor))
-            print('1 - добавить роль, 2 - удалить роль, 0 - выйти')
-            ans = input().strip()
-            match ans:
-                case '1':
-                    print('Название роли: ', end='')
-                    main_role_name = input().strip()
-                    print('ФИ актера: ', end='')
-                    main_role_actor = input().strip()
-                    self.write_main_role(main_role_name, main_role_actor)
-                case '2':
-                    if self.main_roles_actors is not None:
-                        print('Название роли для удаления: ', end='')
-                        main_role_name = input().strip()
-                        if main_role_name in self.main_roles_actors.keys():
-                            self.del_main_role(main_role_name)
-
     def get_main_roles_actors(self):
         return self.main_roles_actors
 
@@ -58,11 +36,12 @@ class DVD(Disk):
         if self.main_roles_actors == {}:
             self.main_roles_actors = None
 
-    def str_main_roles_actors(self):
-        value = []
+    def __str__(self):
+        value = super().__str__() + ' ('
         if self.main_roles_actors is not None:
             for main_role_actor in self.main_roles_actors.items():
-                value.append('{} : {}'.format(main_role_actor[0], main_role_actor[1]))
+                value += '{} : {};'.format(main_role_actor[0], main_role_actor[1])
+            value += ')'
         else:
-            value.append('Список ролей пуст')
+            value += ' Список ролей пуст'
         return value

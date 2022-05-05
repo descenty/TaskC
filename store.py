@@ -46,11 +46,6 @@ class Store:
             audio: Audio
             for audio in self.audios:
                 value += '      ' + audio.__str__() + '\n'
-                value += '         Список песен:\n'
-                if audio.tracks is not None:
-                    track: list(str)
-                    for track in audio.str_tracks():
-                        value += '              {}\n'.format(track)
         else:
             value += '      аудиодисков нету\n'
         value += '  Список фильмов:\n'
@@ -58,10 +53,6 @@ class Store:
             dvd: DVD
             for dvd in self.dvds:
                 value += '      ' + dvd.__str__() + '\n'
-                value += '         Список главных ролей:\n'
-                if dvd.main_roles_actors is not None:
-                    for main_role_actor in dvd.str_main_roles_actors():
-                        value += '              {0}\n'.format(main_role_actor)
         else:
             value += '      фильмов нету'
         return value
@@ -74,8 +65,7 @@ class Store:
             value += len(self.dvds)
         return value
 
-    def get_disk_by_index(self, index: int):
-        index -= 1
+    def __getitem__(self, index):
         curr = 0
         if self.audios is not None:
             for item in self.audios:
@@ -91,44 +81,8 @@ class Store:
                     curr += 1
         return None
 
-    def change_disks(self):
-        print('Введите индекс диска: ', end='')
-        try:
-            index = int(input())
-            self.set_disk_by_index(index)
-        except ValueError:
-            print('НЕВЕРНЫЙ ТИП ДАННЫХ')
-
-    @staticmethod
-    def set_disk(disk: Disk):
-        ans = ''
-        while ans != '0':
-            print('Какое свойство вы хотите изменить? ', '(' + ' '.join(list(disk.properties.keys())) + ')')
-            print('0 - выход')
-            ans = input().strip().capitalize()
-            if ans in disk.properties.keys():
-                disk.change_property(ans)
-            else:
-                print('Свойство ({}) не найдено'.format(ans))
-
-    def set_disk_by_index(self, index: int):
-        disk = self.get_disk_by_index(index)
-        if disk is None:
-            print('ДИСК НЕ НАЙДЕН')
-            return
-        self.set_disk(disk)
-
-    def delete_disk(self):
-        print('Введите индекс диска для удаления:')
-        ans = int(input()) - 1
-        if ans in range(len(self)):
-            disk = self.get_disk_by_index(ans)
-            if type(disk) is Audio:
-                self.audios.remove(disk)
-            elif type(disk) is DVD:
-                self.audios.remove(disk)
-        else:
-            print('ДИСК НЕ НАЙДЕН')
+    def __setitem__(self, key, value):
+        self[key] = value
 
     def __add__(self, other):
         if type(other) is Audio:

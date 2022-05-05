@@ -46,3 +46,5 @@ def input_variable(variable) -> object:
         except TypeError:
             print('ДАННЫЙ ТИП ДАННЫХ НЕ ПОДДЕРЖИВАЕТСЯ')
             break
+        except KeyError:
+            print('КЛЮЧ НЕ НАЙДЕН')
